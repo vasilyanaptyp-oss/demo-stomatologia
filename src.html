@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo strony dla gabinetu stomatologicznego</title>
+<meta name="description" content="Demo strony dla gabinetu stomatologicznego: rejestracja pacjentów online 24/7, wersja mobilna, widoczność w Google. Gotowa strona w 7 dni, od 1 900 zł.">
+<meta property="og:title" content="Demo strony dla Twojego gabinetu stomatologicznego">
+<meta property="og:description" content="Tak może wyglądać strona Twojego gabinetu: rejestracja online 24/7, wersja mobilna, widoczność w Google. Gotowa w 7 dni.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vasilyanaptyp-oss.github.io/demo-stomatologia/">
+<meta property="og:locale" content="pl_PL">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%230d2b26'/%3E%3Cpath d='M24 11c-5.4 0-9 3.4-9 8 0 2.7 1.1 4.5 1.6 6.5.5 1.9.8 4 1.2 6.5.2 1.3 2 1.4 2.3 0 .4-2.1 1-5.1 1.5-6.5.4-1 .9-1.4 1.6-1.4s1.2.4 1.6 1.4c.5 1.4 1.1 4.4 1.5 6.5.3 1.4 2.1 1.3 2.3 0 .4-2.5.7-4.6 1.2-6.5.5-2 1.6-3.8 1.6-6.5 0-4.6-3.6-8-9-8z' fill='%23e8c98a'/%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   FONTY: Playfair Display (variable) + Manrope (variable), latin + latin-ext,
+   wbudowane base64 — plik jest samowystarczalny, bez zewnętrznych zależności.
+   ============================================================ */
+/*FONTS_EMBED*/
+
+/* ============================================================
+   DESIGN TOKENS
+   Paleta: porcelanowa biel + głęboka leśna zieleń + stonowane złoto (tylko akcent).
+   System promieni: karty 18px, przyciski 12px, chipy pełne (dokumentowana zasada).
+   Jednostka bazowa siatki: 8px.
+   ============================================================ */
+:root{
+  --bg:#f2f5f3; --card:#ffffff; --bg-tint:#e9efec; --line:#d9e2dd;
+  --ink:#0f1f1c; --mut:#42544f; --mut-2:#5c6f69;
+  --forest:#0d2b26; --forest-2:#11362f; --btn:#14524a; --btn-h:#0f423b;
+  --gold:#b8863b; --gold-l:#d8b06a; --gold-soft:#f0e3c8;
+  --mint-line:#cfdeda;
+  --r-card:18px; --r-btn:12px;
+  --sh-1:0 10px 30px rgba(13,43,38,.07);
+  --sh-2:0 24px 60px rgba(13,43,38,.13);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6;font-size:16.5px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--forest);color:#fff}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.18;letter-spacing:-.01em}
+a{color:var(--btn)}
+img,svg{max-width:100%}
+a:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ziarno — jedna statyczna warstwa na całej stronie */
+body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+
+/* ---------- pasek demo ---------- */
+.demo-bar{background:var(--forest);color:#d9e4e0;font-size:13.5px;letter-spacing:.02em}
+.demo-bar .wrap{display:flex;align-items:center;justify-content:center;gap:10px;min-height:40px;flex-wrap:wrap;text-align:center;padding-top:6px;padding-bottom:6px}
+.demo-bar .tag{background:rgba(232,201,138,.14);color:var(--gold-l);border:1px solid rgba(232,201,138,.32);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:2px 9px;border-radius:999px}
+.demo-bar b{color:#fff;font-weight:600}
+.demo-bar .days{color:var(--gold-l);font-weight:600;white-space:nowrap}
+
+/* ---------- nawigacja ---------- */
+header{background:rgba(242,245,243,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:68px}
+.logo{display:flex;align-items:center;gap:11px;min-width:0;text-decoration:none;color:var(--ink)}
+.logo .mark{flex:none;width:38px;height:38px;border-radius:11px;background:var(--forest);display:grid;place-items:center}
+.logo .name{font-family:var(--serif);font-weight:600;font-size:18.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(44vw,380px)}
+.logo .sub{display:block;font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--mut-2)}
+.nav-links{display:flex;align-items:center;gap:26px}
+.nav-links a.lnk{color:var(--mut);text-decoration:none;font-weight:600;font-size:15px}
+.nav-links a.lnk:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:var(--r-btn);font-weight:700;font-size:15.5px;text-decoration:none;border:none;cursor:pointer;font-family:var(--sans);transition:transform .18s var(--ease),background-color .18s var(--ease),box-shadow .18s var(--ease),border-color .18s var(--ease),color .18s var(--ease)}
+.btn:active{transform:translateY(1px) scale(.985)}
+.btn-p{background:var(--btn);color:#fff;padding:13px 24px;box-shadow:0 8px 22px rgba(13,43,38,.18)}
+.btn-p:hover{background:var(--btn-h);transform:translateY(-1px)}
+.btn-s{background:transparent;color:var(--ink);border:1.5px solid var(--line);padding:12px 22px}
+.btn-s:hover{border-color:var(--btn);color:var(--btn)}
+.btn-nav{padding:10px 18px;font-size:14.5px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:72px 0 84px;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-260px;right:-180px;width:720px;height:720px;border-radius:50%;background:radial-gradient(circle,rgba(20,82,74,.08) 0%,rgba(20,82,74,.035) 45%,transparent 70%);pointer-events:none}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.06fr .94fr;gap:56px;align-items:center}
+.kicker{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);color:var(--mut);font-weight:700;font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;padding:7px 15px;border-radius:999px;margin-bottom:22px;box-shadow:var(--sh-1)}
+.kicker .pin{color:var(--gold);flex:none}
+h1{font-size:clamp(31px,4.2vw,45px);max-width:15ch}
+h1 .miasto{font-style:italic;font-weight:600;color:var(--btn);position:relative;white-space:nowrap}
+h1 .miasto::after{content:"";position:absolute;left:.04em;right:.06em;bottom:.02em;height:.08em;background:var(--gold);opacity:.55;border-radius:2px}
+.lead{color:var(--mut);font-size:17.5px;margin:20px 0 30px;max-width:46ch}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+.hero .zauf{margin-top:30px;display:flex;gap:8px 22px;color:var(--mut-2);font-size:14px;flex-wrap:wrap}
+.hero .zauf span{display:flex;align-items:center;gap:7px}
+.hero .zauf svg{color:var(--gold);flex:none}
+
+/* ---------- widżet rezerwacji (prawdziwy, działający) ---------- */
+.widget{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh-2);padding:26px 26px 22px;position:relative}
+.widget::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;border-radius:var(--r-card) var(--r-card) 0 0;background:linear-gradient(90deg,var(--forest) 0%,var(--btn) 55%,var(--gold) 100%)}
+.w-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.w-title{font-family:var(--serif);font-weight:600;font-size:21px}
+.w-live{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--mut-2);letter-spacing:.06em;text-transform:uppercase}
+.w-live .dot{width:8px;height:8px;border-radius:50%;background:#2e9b6e;box-shadow:0 0 0 3px rgba(46,155,110,.16);flex:none}
+.w-sub{color:var(--mut-2);font-size:13.5px;margin-bottom:18px}
+.w-step{border:none;margin-bottom:16px}
+.w-step legend{font-size:11.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--mut-2);margin-bottom:9px;padding:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--mut);background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:8px 15px;cursor:pointer;transition:border-color .16s var(--ease),background-color .16s var(--ease),color .16s var(--ease),transform .16s var(--ease)}
+.chip:hover{border-color:var(--btn);color:var(--btn)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:#fff}
+.chip:disabled{opacity:.38;cursor:not-allowed;text-decoration:line-through}
+.chip .dzien{display:block;text-align:center}
+.day-chip{min-width:64px;text-align:center}
+.day-chip small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:inherit;opacity:.72}
+.w-confirm{width:100%;margin-top:4px}
+.w-confirm:disabled{background:var(--mint-line);color:var(--mut-2);box-shadow:none;cursor:not-allowed}
+.w-note{color:var(--mut-2);font-size:12.5px;text-align:center;margin-top:12px}
+.w-empty{display:block;font-size:13.5px;color:var(--mut-2);font-style:italic;padding:5px 0}
+.w-success{border-top:1px dashed var(--line);margin-top:18px;padding-top:16px;display:none}
+.w-success.on{display:block;animation:wsp .35s var(--ease)}
+.w-success .big{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15.5px;color:var(--btn)}
+.w-success .big .tick{flex:none;width:26px;height:26px;border-radius:50%;background:var(--forest);color:var(--gold-l);display:grid;place-items:center}
+.w-success p{color:var(--mut);font-size:13.5px;margin-top:7px}
+@keyframes wsp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- pasek korzyści ---------- */
+.perks{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
+.perks .wrap{display:grid;grid-template-columns:repeat(3,1fr);}
+.perk{display:flex;gap:14px;align-items:flex-start;padding:26px 28px}
+.perk + .perk{border-left:1px solid var(--line)}
+.perk .p-ico{flex:none;width:44px;height:44px;border-radius:12px;background:var(--bg-tint);color:var(--btn);display:grid;place-items:center}
+.perk h3{font-family:var(--sans);font-weight:800;font-size:15.5px;letter-spacing:.01em;margin-bottom:3px}
+.perk p{color:var(--mut-2);font-size:13.8px;line-height:1.5}
+
+/* ---------- usługi: bento ---------- */
+section{padding:88px 0}
+.sec-head{max-width:56ch;margin-bottom:44px}
+.sec-head h2{font-size:clamp(26px,3vw,34px)}
+.sec-head .sub{color:var(--mut);margin-top:12px;font-size:16.5px}
+.bento{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:18px}
+.tile{border:1px solid var(--line);border-radius:var(--r-card);background:var(--card);padding:30px 28px;position:relative;overflow:hidden;transition:transform .22s var(--ease),box-shadow .22s var(--ease)}
+.tile:hover{transform:translateY(-4px);box-shadow:var(--sh-1)}
+.tile h3{font-size:21px;margin-bottom:10px}
+.tile p{color:var(--mut);font-size:15px;max-width:40ch}
+.tile .t-eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.tile-feat{grid-row:span 2;display:flex;flex-direction:column;justify-content:flex-end;min-height:340px;border:none;color:#eef3f1;background:linear-gradient(158deg,var(--forest) 0%,var(--forest-2) 58%,#16453b 100%)}
+.tile-feat::before{content:"";position:absolute;inset:auto -70px -90px auto;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(232,201,138,.16) 0%,transparent 65%)}
+.tile-feat::after{content:"";position:absolute;top:24px;right:26px;width:54px;height:54px;border:1px solid rgba(232,201,138,.4);border-radius:50%}
+.tile-feat h3{font-size:26px;color:#fff}
+.tile-feat p{color:#b9c9c4;font-size:15px}
+.tile-feat .t-eyebrow{color:var(--gold-l)}
+.tile-feat .tile-link{margin-top:auto;padding-top:22px;font-weight:700;font-size:14.5px;color:var(--gold-l);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.tile-feat .tile-link:hover{color:#fff}
+.tile-2{grid-column:span 2;background:linear-gradient(150deg,#ffffff 0%,var(--bg-tint) 100%)}
+.tile-note{margin-top:26px;color:var(--mut-2);font-size:14px;display:flex;align-items:center;gap:9px}
+.tile-note svg{color:var(--gold);flex:none}
+
+/* ---------- dlaczego (pitch, jasny tint) ---------- */
+.why{background:var(--bg-tint);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.why .statement{font-family:var(--serif);font-weight:600;font-size:clamp(27px,3.4vw,39px);line-height:1.22;max-width:22ch;letter-spacing:-.01em}
+.why .statement em{font-style:italic;color:var(--btn);white-space:nowrap}
+.why-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:52px}
+.why-col{border-top:2px solid var(--gold);padding-top:20px}
+.why-col h3{font-size:19.5px;margin-bottom:9px}
+.why-col p{color:var(--mut);font-size:15px}
+
+/* ---------- proces: oś czasu ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative;margin-top:8px}
+.steps::before{content:"";position:absolute;top:23px;left:11%;right:11%;height:1px;background:var(--line)}
+.step{padding:0 30px 0 0;position:relative}
+.step + .step{padding-left:30px;padding-right:0}
+.step .s-dot{width:46px;height:46px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;color:var(--btn);margin-bottom:18px;position:relative;z-index:1}
+.step:nth-child(2) .s-dot{background:var(--forest);border-color:var(--forest);color:var(--gold-l)}
+.step h3{font-size:19.5px;margin-bottom:8px}
+.step p{color:var(--mut);font-size:15px;max-width:34ch}
+.step .s-meta{margin-top:12px;display:inline-block;font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--gold)}
+.steps-note{margin-top:46px;border-left:3px solid var(--gold);padding:6px 0 6px 20px;color:var(--mut);font-size:15.5px;max-width:60ch}
+.steps-note b{color:var(--ink)}
+
+/* ---------- oferta (jedyna ciemna sekcja) ---------- */
+.oferta{background:linear-gradient(165deg,var(--forest) 0%,var(--forest-2) 70%,#123c34 100%);color:#eef3f1;position:relative;overflow:hidden}
+.oferta::before{content:"";position:absolute;top:-180px;left:50%;transform:translateX(-50%);width:860px;height:520px;background:radial-gradient(ellipse,rgba(232,201,138,.09) 0%,transparent 65%);pointer-events:none}
+.oferta .wrap{position:relative}
+.of-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.of-kicker{font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-l)}
+.oferta h2{font-size:clamp(28px,3.4vw,39px);color:#fff;margin:14px 0 16px}
+.oferta .opis{color:#b9c9c4;font-size:16.5px;max-width:48ch}
+.of-list{list-style:none;margin-top:26px;display:grid;gap:12px}
+.of-list li{display:flex;gap:12px;align-items:flex-start;color:#dbe5e2;font-size:15.5px}
+.of-list svg{flex:none;color:var(--gold-l);margin-top:3px}
+.of-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-card);padding:36px 34px;text-align:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.of-price{font-family:var(--serif);font-weight:600;font-size:56px;color:var(--gold-l);line-height:1;letter-spacing:-.01em}
+.of-price small{display:block;font-family:var(--sans);font-size:13.5px;font-weight:600;color:#9db3ad;letter-spacing:.08em;text-transform:uppercase;margin-top:10px}
+.of-card .btn{width:100%;margin-top:26px;background:var(--gold);color:#231807;box-shadow:0 10px 26px rgba(184,134,59,.28)}
+.of-card .btn:hover{background:var(--gold-l)}
+.of-odp{margin-top:16px;font-size:13.5px;color:#9db3ad}
+.of-fallback{display:none;margin-top:20px;font-size:15px;line-height:1.55;color:#e8dfc9;border:1px dashed rgba(216,176,106,.45);border-radius:12px;padding:14px 16px;background:rgba(216,176,106,.07)}
+
+/* ---------- stopka ---------- */
+footer{padding:44px 0 130px;color:var(--mut-2);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+footer .f-brand{font-family:var(--serif);font-weight:600;font-size:17px;color:var(--ink)}
+footer a{color:var(--btn);font-weight:600}
+
+/* ---------- pasek odpowiedzi (telefon) ---------- */
+.reply-bar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);box-shadow:0 -8px 28px rgba(13,43,38,.12);padding:10px 14px}
+.reply-bar .btn{width:100%}
+
+/* ---------- animacje wejścia ---------- */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv-d1{transition-delay:.08s}.rv-d2{transition-delay:.16s}.rv-d3{transition-delay:.24s}
+
+/* ---------- responsywność ---------- */
+@media(max-width:1020px){
+  .hero-grid{grid-template-columns:1fr;gap:44px}
+  .hero{padding:56px 0 64px}
+  h1{max-width:18ch}
+  .bento{grid-template-columns:1fr 1fr}
+  .tile-feat{grid-row:auto;grid-column:span 2;min-height:230px}
+  .tile-2{grid-column:span 2}
+  .of-grid{grid-template-columns:1fr;gap:40px}
+  .why-cols{grid-template-columns:1fr;gap:30px}
+  .steps{grid-template-columns:1fr;gap:34px}
+  .steps::before{display:none}
+  .step{padding:0!important}
+  .perks .wrap{grid-template-columns:1fr}
+  .perk + .perk{border-left:none;border-top:1px solid var(--line)}
+}
+@media(max-width:820px){
+  .reply-bar{display:block}
+  .nav-links a.lnk{display:none}
+  section{padding:64px 0}
+}
+@media(max-width:560px){
+  body{font-size:16px}
+  .bento{grid-template-columns:1fr}
+  .tile-feat,.tile-2{grid-column:auto}
+  .widget{padding:22px 18px 18px}
+  .demo-bar .days{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- pasek demo: jedyny element mówiący głosem wykonawcy -->
+<div class="demo-bar">
+  <div class="wrap">
+    <span class="tag">Demo</span>
+    <span>strona przygotowana specjalnie dla <b id="klinika-bar">tego gabinetu</b></span>
+    <span class="days">gotowa wersja w 7 dni</span>
+  </div>
+</div>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#" aria-label="Strona główna demo">
+      <span class="mark" aria-hidden="true">
+        <svg width="21" height="21" viewBox="0 0 24 24"><path d="M12 3C8.2 3 5.5 5.4 5.5 8.7c0 1.9.8 3.2 1.2 4.7.4 1.4.6 2.9.9 4.7.1.9 1.4 1 1.6 0 .3-1.5.7-3.7 1.1-4.7.3-.7.7-1 1.2-1s.9.3 1.2 1c.4 1 .8 3.2 1.1 4.7.2 1 1.5.9 1.6 0 .3-1.8.5-3.3.9-4.7.4-1.5 1.2-2.8 1.2-4.7C18.5 5.4 15.8 3 12 3z" fill="#e8c98a"/></svg>
+      </span>
+      <span class="name"><span id="klinika-nav">Klinika Stomatologiczna</span><span class="sub" id="gorod-nav">Gabinet stomatologiczny</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Menu główne">
+      <a class="lnk" href="#uslugi">Zakres leczenia</a>
+      <a class="lnk" href="#jak-to-dziala">Jak to działa</a>
+      <a class="btn btn-p btn-nav" href="#rezerwacja">Umów wizytę online</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="kicker rv"><svg class="pin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span id="kicker">Stomatologia estetyczna i implanty</span></p>
+      <h1 class="rv rv-d1">Nowoczesna stomatologia w <span class="miasto" id="gorod-h1">Twoim mieście</span></h1>
+      <p class="lead rv rv-d2">Implanty, ortodoncja i stomatologia estetyczna. Wizytę umówisz online w 30 sekund, także po godzinach pracy gabinetu.</p>
+      <div class="hero-cta rv rv-d3">
+        <a class="btn btn-p" href="#rezerwacja">Umów wizytę online</a>
+        <a class="btn btn-s" href="#uslugi">Zobacz zakres leczenia</a>
+      </div>
+      <div class="zauf rv rv-d3">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>rejestracja 24/7</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>potwierdzenie e-mailem</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>przypomnienie przed wizytą</span>
+      </div>
+    </div>
+
+    <!-- PRAWDZIWY, DZIAŁAJĄCY WIDŻET REZERWACJI -->
+    <div class="widget rv rv-d2" id="rezerwacja" aria-label="Formularz rejestracji online">
+      <div class="w-head">
+        <span class="w-title">Rezerwacja wizyty</span>
+        <span class="w-live"><span class="dot" aria-hidden="true"></span>wolne terminy</span>
+      </div>
+      <p class="w-sub">Wybierz usługę i termin. Zajmie to mniej niż 30 sekund.</p>
+      <form id="w-form">
+        <fieldset class="w-step">
+          <legend>Usługa</legend>
+          <div class="chips" id="w-uslugi" role="group" aria-label="Wybierz usługę"></div>
+        </fieldset>
+        <fieldset class="w-step">
+          <legend>Dzień</legend>
+          <div class="chips" id="w-dni" role="group" aria-label="Wybierz dzień wizyty"></div>
+        </fieldset>
+        <fieldset class="w-step">
+          <legend>Godzina</legend>
+          <div class="chips" id="w-godziny" role="group" aria-label="Wybierz godzinę wizyty"></div>
+        </fieldset>
+        <button class="btn btn-p w-confirm" id="w-confirm" type="submit" disabled>Potwierdź termin</button>
+      </form>
+      <p class="w-note">Bez telefonu i bez kolejki. Potwierdzenie dostajesz e-mailem.</p>
+      <div class="w-success" id="w-success" role="status">
+        <p class="big"><span class="tick" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span id="w-success-txt">Termin zarezerwowany</span></p>
+        <p id="w-success-sub"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= KORZYŚCI ================= -->
+<div class="perks">
+  <div class="wrap">
+    <div class="perk rv">
+      <span class="p-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 9.5h18M9.5 15l1.7 1.7 3.2-3.2"/></svg></span>
+      <div>
+        <h3>Rejestracja online 24/7</h3>
+        <p>Pacjent umawia wizytę wieczorem lub w weekend. Zgłoszenie trafia prosto do gabinetu.</p>
+      </div>
+    </div>
+    <div class="perk rv rv-d1">
+      <span class="p-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
+      <div>
+        <h3>Perfekcyjna na telefonie</h3>
+        <p>Większość pacjentów szuka gabinetu z telefonu. Ta strona działa szybko i czytelnie na każdym ekranie.</p>
+      </div>
+    </div>
+    <div class="perk rv rv-d2">
+      <span class="p-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+      <div>
+        <h3>Widoczność w Google</h3>
+        <p>Strona przygotowana pod frazy takie jak „stomatolog <span id="gorod-seo">Twoje miasto</span>”. Pacjenci z okolicy znajdą Was pierwsi.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= USŁUGI ================= -->
+<section id="uslugi">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2>Zakres leczenia</h2>
+      <p class="sub">Od profilaktyki po kompleksowe leczenie implantologiczne, wszystko w jednym miejscu.</p>
+    </div>
+    <div class="bento">
+      <div class="tile tile-feat rv">
+        <p class="t-eyebrow">Nasza specjalność</p>
+        <h3>Implantologia</h3>
+        <p>Korony i mosty na implantach. Plan leczenia, wycena i harmonogram już na pierwszej konsultacji.</p>
+        <a class="tile-link" href="#rezerwacja">Umów konsultację
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="tile tile-2 rv rv-d1">
+        <h3>Stomatologia estetyczna</h3>
+        <p>Wybielanie oraz licówki kompozytowe i porcelanowe, dobrane do kształtu i koloru Twojego uśmiechu.</p>
+      </div>
+      <div class="tile rv rv-d2">
+        <h3>Ortodoncja</h3>
+        <p>Aparaty stałe i ruchome, także dla dorosłych. Plan leczenia z jasnym harmonogramem.</p>
+      </div>
+      <div class="tile rv">
+        <h3>Higienizacja</h3>
+        <p>Scaling, piaskowanie i fluoryzacja podczas jednej wizyty.</p>
+      </div>
+      <div class="tile rv rv-d1">
+        <h3>Endodoncja</h3>
+        <p>Leczenie kanałowe, które oszczędza własne zęby.</p>
+      </div>
+      <div class="tile tile-2 rv rv-d2">
+        <h3>Stomatologia dziecięca</h3>
+        <p>Bezstresowe wizyty adaptacyjne dla najmłodszych. Pierwsza wizyta to poznawanie gabinetu, bez bólu i bez pośpiechu.</p>
+      </div>
+    </div>
+    <p class="tile-note rv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+      W gotowej stronie znajdą się dokładnie te usługi i ceny, które oferujecie.</p>
+  </div>
+</section>
+
+<!-- ================= DLACZEGO TA STRONA ================= -->
+<div class="why">
+  <section style="padding:84px 0">
+    <div class="wrap">
+      <p class="statement rv">Pacjenci szukają gabinetu w Google i w telefonie. <em>Ta strona</em> sprawia, że znajdują właśnie Was.</p>
+      <div class="why-cols">
+        <div class="why-col rv">
+          <h3>Recepcja pracuje po godzinach</h3>
+          <p>Rejestracja działa wieczorem, w nocy i w weekend. Każde zgłoszenie przychodzi na Waszą skrzynkę, a pacjent dostaje potwierdzenie.</p>
+        </div>
+        <div class="why-col rv rv-d1">
+          <h3>Najpierw telefon, potem gabinet</h3>
+          <p>Strona czyta się dobrze na małym ekranie, bez powiększania i scrollowania w bok. To tam pacjent podejmuje decyzję.</p>
+        </div>
+        <div class="why-col rv rv-d2">
+          <h3>Wyniki lokalne w Google</h3>
+          <p>Struktura strony przygotowana pod frazy „stomatolog <span class="gorod-why">Twoje miasto</span>”, „implanty”, „wybielanie”. Pacjenci z okolicy trafiają prosto do Was.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= PROCES ================= -->
+<section id="jak-to-dziala">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2>Od rozmowy do gotowej strony</h2>
+      <p class="sub">Twój wkład to jedna rozmowa i akceptacja projektu. Resztą zajmuję się ja.</p>
+    </div>
+    <div class="steps">
+      <div class="step rv">
+        <span class="s-dot" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.3-.7L3 21l1.8-5.7a8.4 8.4 0 1 1 16.2-3.8Z"/></svg></span>
+        <h3>Rozmowa 15 minut</h3>
+        <p>Telefonicznie lub na miejscu: usługi, ceny, godziny otwarcia i Wasze oczekiwania.</p>
+        <span class="s-meta">dzień 1</span>
+      </div>
+      <div class="step rv rv-d1">
+        <span class="s-dot" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8.5 8.5h7M8.5 12.5h7M8.5 16.5h4"/></svg></span>
+        <h3>Projekt w 7 dni</h3>
+        <p>Strona, teksty i układ powstają po mojej stronie. Ty akceptujesz, poprawki są w cenie.</p>
+        <span class="s-meta">dzień 2 do 7</span>
+      </div>
+      <div class="step rv rv-d2">
+        <span class="s-dot" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></span>
+        <h3>Start i pierwsi pacjenci</h3>
+        <p>Publikacja strony, domena, hosting na rok i rejestracja online od pierwszego dnia.</p>
+        <span class="s-meta">dzień 8</span>
+      </div>
+    </div>
+    <p class="steps-note rv"><b>Zero zobowiązań.</b> To demo powstało zanim zadzwonił telefon, żebyś zobaczył konkretnie swoją stronę, a nie obietnice.</p>
+  </div>
+</section>
+
+<!-- ================= OFERTA ================= -->
+<section class="oferta" id="oferta">
+  <div class="wrap of-grid">
+    <div class="rv">
+      <p class="of-kicker">Oferta dla <span id="klinika-of">tego gabinetu</span></p>
+      <h2>Ta strona może być Wasza</h2>
+      <p class="opis">Dokładnie ta strona, którą właśnie oglądacie, z Waszym logo, zdjęciami, usługami i danymi. Bez abonamentu i ukrytych kosztów.</p>
+      <ul class="of-list">
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>projekt graficzny i teksty po polsku</li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>rejestracja pacjentów online 24/7</li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>domena i hosting na cały rok</li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>gotowa w 7 dni, poprawki w cenie</li>
+      </ul>
+    </div>
+    <div class="of-card rv rv-d1">
+      <div class="of-price">1 900 zł<small>jednorazowo, bez abonamentu</small></div>
+      <a class="btn" id="cta-reply" href="#rezerwacja">Chcę taką stronę</a>
+      <p class="of-odp">Odpowiadam zwykle w ciągu 2 godzin.</p>
+      <p class="of-fallback" id="of-fallback">Wystarczy odpowiedzieć na maila, w którym dostaliście link do tego demo. Odezwę się z detalami tego samego dnia.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><span class="f-brand" id="klinika-foot">Klinika Stomatologiczna</span> · <span id="gorod-foot">Twoje miasto</span></div>
+    <div>Demo strony przygotowane indywidualnie · © 2026</div>
+    <div>Projekt i wykonanie: <a href="https://vasilyanaptyp-oss.github.io/" target="_blank" rel="noopener">Artur Vasilyan</a></div>
+  </div>
+</footer>
+
+<div class="reply-bar">
+  <a class="btn btn-p" id="reply-mobile" href="#oferta">Podoba Wam się? Odpiszcie na maila</a>
+</div>
+
+<script>
+/* ============================================================
+   1) PERSONALIZACJA z URL: ?klinika=...&gorod=...&kontakt=...
+      (API zgodne z linkami z bazy: gen_linki.py)
+   ============================================================ */
+(function(){
+  var q = new URLSearchParams(location.search);
+  var klinika = (q.get('klinika') || '').trim();
+  var gorod = (q.get('gorod') || '').trim();
+  var kontakt = (q.get('kontakt') || '').trim();
+  var mailOK = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(kontakt);
+  var set = function(id, text){ var el = document.getElementById(id); if (el && text) el.textContent = text; };
+
+  if (klinika) {
+    document.title = 'Demo strony · ' + klinika;
+    set('klinika-bar', klinika);
+    set('klinika-nav', klinika);
+    set('klinika-foot', klinika);
+    set('klinika-of', klinika);
+  }
+  if (gorod) {
+    set('gorod-h1', gorod);
+    set('gorod-seo', gorod);
+    set('gorod-foot', gorod);
+    set('kicker', 'Stomatologia estetyczna i implanty · ' + gorod);
+    var gws = document.querySelectorAll('.gorod-why');
+    for (var i = 0; i < gws.length; i++) gws[i].textContent = gorod;
+    var gn = document.getElementById('gorod-nav');
+    if (gn) gn.textContent = 'Gabinet stomatologiczny · ' + gorod;
+  }
+
+  var tematOf = 'Strona dla gabinetu' + (klinika ? ' (' + klinika + (gorod ? ', ' + gorod : '') + ')' : '');
+  if (mailOK) {
+    var href = 'mailto:' + encodeURIComponent(kontakt) + '?subject=' + encodeURIComponent(tematOf);
+    var cta = document.getElementById('cta-reply');
+    if (cta) cta.href = href;
+    var rm = document.getElementById('reply-mobile');
+    if (rm) rm.href = href;
+  } else {
+    var fb = document.getElementById('of-fallback');
+    var cr = document.getElementById('cta-reply');
+    if (fb && cr) { cr.style.display = 'none'; fb.style.display = 'block'; }
+    var rm2 = document.getElementById('reply-mobile');
+    if (rm2) rm2.textContent = 'Zobaczcie ofertę';
+  }
+  window.__kontakt = mailOK ? kontakt : '';
+  window.__klinika = klinika;
+})();
+
+/* ============================================================
+   2) WIDŻET REZERWACJI — prawdziwe, działające demo rejestracji
+   ============================================================ */
+(function(){
+  var USLUGI = ['Konsultacja', 'Higienizacja', 'Wybielanie', 'Konsultacja implantologiczna'];
+  var GODZINY = ['08:30','09:30','10:30','11:30','13:00','14:30','16:00','17:30'];
+  var fmtDay = new Intl.DateTimeFormat('pl-PL', { weekday: 'short' });
+  var fmtDate = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'short' });
+
+  var stan = { usluga: '', dzien: null, godzina: '' };
+  var elU = document.getElementById('w-uslugi');
+  var elD = document.getElementById('w-dni');
+  var elG = document.getElementById('w-godziny');
+  var btn = document.getElementById('w-confirm');
+  if (!elU || !elD || !elG || !btn) return;
+
+  function przyciski(kontener, elementy, wybrane, onPick, opcje){
+    kontener.innerHTML = '';
+    elementy.forEach(function(el, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip' + (opcje && opcje.klasa ? ' ' + opcje.klasa : '');
+      b.setAttribute('aria-pressed', wybrane === i ? 'true' : 'false');
+      if (opcje && opcje.buduj) opcje.buduj(b, el, i);
+      else b.textContent = el;
+      b.addEventListener('click', function(){ onPick(i); });
+      kontener.appendChild(b);
+    });
+  }
+
+  function nastepneDni(n){
+    var dni = [], d = new Date();
+    while (dni.length < n) {
+      d = new Date(d.getTime() + 864e5);
+      var wd = d.getDay();
+      if (wd !== 0 && wd !== 6) dni.push(new Date(d)); /* pn-pt */
+    }
+    return dni;
+  }
+  var dniTygodnia = nastepneDni(5);
+
+  function godzinyDla(dzienIdx){
+    /* deterministycznie "zajęte" godziny, różne dla każdego dnia */
+    return GODZINY.map(function(g, i){
+      return { g: g, wolna: !(((dzienIdx + 1) * 3 + i * 5) % 7 === 0) };
+    });
+  }
+
+  function rysujGodziny(){
+    if (stan.dzien === null) { elG.innerHTML = '<span class="w-empty">Najpierw wybierz dzień powyżej.</span>'; return; }
+    var godz = godzinyDla(stan.dzien);
+    przyciski(elG, godz, godz.findIndex(function(x){ return x.g === stan.godzina; }), function(i){
+      if (!godz[i].wolna) return;
+      stan.godzina = (stan.godzina === godz[i].g) ? '' : godz[i].g;
+      rysujGodziny(); odswiez();
+    }, { buduj: function(b, x){ b.textContent = x.g; b.disabled = !x.wolna; } });
+  }
+
+  function rysujDni(){
+    przyciski(elD, dniTygodnia, stan.dzien, function(i){
+      stan.dzien = (stan.dzien === i) ? null : i;
+      stan.godzina = '';
+      rysujDni(); rysujGodziny(); odswiez();
+    }, {
+      klasa: 'day-chip',
+      buduj: function(b, d){
+        var s1 = document.createElement('small');
+        s1.textContent = fmtDay.format(d).replace('.', '');
+        var s2 = document.createElement('span');
+        s2.className = 'dzien';
+        s2.textContent = fmtDate.format(d);
+        b.appendChild(s1); b.appendChild(s2);
+      }
+    });
+  }
+
+  function wybierzUsluge(i){
+    stan.usluga = (stan.usluga === USLUGI[i]) ? '' : USLUGI[i];
+    przyciski(elU, USLUGI, USLUGI.indexOf(stan.usluga), wybierzUsluge);
+    odswiez();
+  }
+  przyciski(elU, USLUGI, -1, wybierzUsluge);
+
+  rysujDni();
+  rysujGodziny();
+
+  function odswiez(){
+    btn.disabled = !(stan.usluga && stan.dzien !== null && stan.godzina);
+    btn.textContent = btn.disabled ? 'Wybierz usługę, dzień i godzinę' : 'Potwierdź termin: ' + stan.godzina;
+  }
+  odswiez();
+
+  document.getElementById('w-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    if (btn.disabled) return;
+    var d = dniTygodnia[stan.dzien];
+    var kiedy = fmtDay.format(d).replace('.', '') + ', ' + fmtDate.format(d) + ', godz. ' + stan.godzina;
+    var sukces = document.getElementById('w-success');
+    var txt = document.getElementById('w-success-txt');
+    var sub = document.getElementById('w-success-sub');
+    var kto = window.__kontakt;
+    if (kto) {
+      var temat = 'Rejestracja: ' + stan.usluga + ' (' + kiedy + ')';
+      var tresc = 'Dzień dobry,' + '%0D%0A' + 'proszę o potwierdzenie terminu: ' + stan.usluga + ', ' + kiedy + '.'
+        + (window.__klinika ? '%0D%0A' + window.__klinika : '');
+      txt.textContent = 'Wybrano: ' + stan.usluga;
+      sub.textContent = 'Termin: ' + kiedy + '. W oknie poczty wybierz „Wyślij”, a gabinet potwierdzi wizytę.';
+      location.href = 'mailto:' + encodeURIComponent(kto) + '?subject=' + encodeURIComponent(temat) + '&body=' + tresc;
+    } else {
+      txt.textContent = 'Wybrano: ' + stan.usluga + ', ' + kiedy;
+      sub.textContent = 'To działające demo. W gotowej stronie takie zgłoszenie przychodzi prosto na skrzynkę gabinetu, a pacjent dostaje potwierdzenie.';
+    }
+    sukces.classList.add('on');
+  });
+})();
+
+/* ============================================================
+   3) ANIMACJE WEJŚCIA (IntersectionObserver, raz, z reduced-motion)
+   ============================================================ */
+(function(){
+  var rv = document.querySelectorAll('.rv');
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    rv.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.16, rootMargin: '0px 0px -6% 0px' });
+  rv.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
