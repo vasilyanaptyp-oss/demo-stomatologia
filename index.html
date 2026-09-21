@@ -684,11 +684,11 @@ footer a{color:var(--btn);font-weight:600}
     var kto = window.__kontakt;
     if (kto) {
       var temat = 'Rejestracja: ' + stan.usluga + ' (' + kiedy + ')';
-      var tresc = 'Dzień dobry,' + '%0D%0A' + 'proszę o potwierdzenie terminu: ' + stan.usluga + ', ' + kiedy + '.'
-        + (window.__klinika ? '%0D%0A' + window.__klinika : '');
+      var tresc = 'Dzień dobry,\r\nproszę o potwierdzenie terminu: ' + stan.usluga + ', ' + kiedy + '.'
+        + (window.__klinika ? '\r\n' + window.__klinika : '');
       txt.textContent = 'Wybrano: ' + stan.usluga;
       sub.textContent = 'Termin: ' + kiedy + '. W oknie poczty wybierz „Wyślij”, a gabinet potwierdzi wizytę.';
-      location.href = 'mailto:' + encodeURIComponent(kto) + '?subject=' + encodeURIComponent(temat) + '&body=' + tresc;
+      location.href = 'mailto:' + encodeURIComponent(kto) + '?subject=' + encodeURIComponent(temat) + '&body=' + encodeURIComponent(tresc);
     } else {
       txt.textContent = 'Wybrano: ' + stan.usluga + ', ' + kiedy;
       sub.textContent = 'To działające demo. W gotowej stronie takie zgłoszenie przychodzi prosto na skrzynkę gabinetu, a pacjent dostaje potwierdzenie.';
